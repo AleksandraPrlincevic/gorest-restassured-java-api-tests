@@ -9,8 +9,7 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
 import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
@@ -19,14 +18,15 @@ public class UsersTest {
 
     //private String usersParameter;
     private int userIdParameter;
+    private static Faker faker;
 
     @BeforeClass
     public void setUp() {
     RestAssured.baseURI = ConfigReader.getBaseUrl();
-    //usersParameter = "users";
+    faker = new Faker();
 }
     @Test
-    public void listUser(){
+    public void listUsers(){
      List<User> users =
              given().log().all()
              .when().get(ConfigReader.getUserParameter())
@@ -62,7 +62,6 @@ public class UsersTest {
     @Test
     public void createUser(){
         User newUser = new User();
-        Faker faker = new Faker();
         newUser.setName(faker.name().fullName());
         newUser.setEmail(faker.internet().emailAddress());
         newUser.setGender(faker.gender().binaryTypes());
@@ -84,4 +83,64 @@ public class UsersTest {
     Assert.assertTrue(createdUser.getGender().equalsIgnoreCase(newUser.getGender()));
     Assert.assertEquals(createdUser.getStatus(), newUser.getStatus());
     }
+    @Test
+    public void replaceUser(){
+        User substituteUser = new User();
+        substituteUser.setName(faker.name().fullName());
+        substituteUser.setEmail(faker.internet().emailAddress());
+        substituteUser.setGender(faker.gender().binaryTypes());
+        substituteUser.setStatus(faker.options().option("active", "inactive"));
+
+        List<User> users =
+                given()
+                        .when().get(ConfigReader.getUserParameter())
+                        .then().statusCode(200)
+        .extract().response().jsonPath().getList(".", User.class);
+        User randomUser = users.get(new Random().nextInt(users.size()));
+         userIdParameter = randomUser.getId();
+        User replacedUser =
+        given().log().all()
+                .header("Authorization", "Bearer " + ConfigReader.getToken())
+                .contentType(ContentType.JSON)
+                .body(substituteUser)
+                .when().put(ConfigReader.getUserParameter() + "/" + userIdParameter)
+                .then().log().all()
+                .statusCode(200)
+        .extract().response().as(User.class);
+
+        Assert.assertEquals(replacedUser.getId(), randomUser.getId());
+        Assert.assertEquals(replacedUser.getEmail(), substituteUser.getEmail());
+        Assert.assertEquals(replacedUser.getStatus(), substituteUser.getStatus());
+        Assert.assertTrue(replacedUser.getGender().equalsIgnoreCase(substituteUser.getGender()));
+        Assert.assertNotEquals(replacedUser.getName(), randomUser.getName());
+    }
+    @Test
+    public void updateUser() {
+        List<User> users =
+                given()
+                        .when().get(ConfigReader.getUserParameter())
+                        .then().statusCode(200)
+                        .extract().response().jsonPath().getList(".", User.class);
+        User randomUser = users.get(new Random().nextInt(users.size()));
+        userIdParameter = randomUser.getId();
+
+        String newName = faker.name().fullName();
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("name", newName);
+        updates.put("gender", "male");
+        User updatedUser =
+                given()
+                        .header("Authorization", "Bearer " + ConfigReader.getToken())
+                        .contentType(ContentType.JSON)
+                        .body(updates)
+                        .when().patch(ConfigReader.getUserParameter() + "/" + userIdParameter)
+                        .then().log().all()
+                        .statusCode(200)
+                        .extract().response().as(User.class);
+        Assert.assertEquals(updatedUser.getName(), newName);
+        Assert.assertEquals(updatedUser.getGender(), "male");
+        Assert.assertEquals(updatedUser.getEmail(), randomUser.getEmail());
+
+    }
 }
+
