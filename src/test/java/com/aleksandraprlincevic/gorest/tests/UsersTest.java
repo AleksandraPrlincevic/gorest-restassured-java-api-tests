@@ -140,7 +140,33 @@ public class UsersTest {
         Assert.assertEquals(updatedUser.getName(), newName);
         Assert.assertEquals(updatedUser.getGender(), "male");
         Assert.assertEquals(updatedUser.getEmail(), randomUser.getEmail());
+    }
+    @Test
+    public void deleteUser(){
+         List<User> users =
+                 given()
+                         .when().get(ConfigReader.getUserParameter())
+                         .then()
+                         .statusCode(200)
+                 .extract().response().jsonPath().getList(".", User.class);
+         User randomUser = users.get(new Random().nextInt(users.size()));
+         userIdParameter = randomUser.getId();
 
+         given().log().all()
+                 .header("Authorization", "Bearer " + ConfigReader.getToken())
+                 .contentType(ContentType.JSON)
+                 .when().delete(ConfigReader.getUserParameter() + "/" + userIdParameter)
+                 .then()
+                 .statusCode(204);
+        List<User> usersAfterDelete =
+                given()
+                        .when().get(ConfigReader.getUserParameter())
+                        .then()
+                        .statusCode(200)
+                .extract().response().jsonPath().getList(".", User.class);
+
+        boolean userStillExist =usersAfterDelete.stream().anyMatch(user->user.getId() == userIdParameter);
+        Assert.assertFalse(userStillExist);
     }
 }
 
