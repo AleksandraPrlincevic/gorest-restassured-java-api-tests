@@ -38,6 +38,27 @@ public class PostsTest {
            Assert.assertTrue(post.getUser_id()>0);
            Assert.assertNotNull(post.getBody());
        });
+   }
+   @Test
+    public void getPost(){
+       List<Post> posts =
+               given()
+                       .when().get( ConfigReader.getPostParameter())
+                       .then()
+                       .contentType(ContentType.JSON)
+               .extract().response().jsonPath().getList(".", Post.class);
+       Post randomPost = posts.get(new Random().nextInt(posts.size()));
+       int randomPostId = randomPost.getId();
+Post fetchedPost =
+       given()
+               .when().get(ConfigReader.getPostParameter() + "/" + randomPostId)
+               .then().log().all()
+               .statusCode(200)
+       .extract().response().as(Post.class);
+       Assert.assertEquals(fetchedPost.getId(), randomPostId);
+       Assert.assertEquals(fetchedPost.getUser_id(), randomPost.getUser_id());
+       Assert.assertEquals(fetchedPost.getTitle(), (randomPost.getTitle()));
+       Assert.assertTrue(fetchedPost.getBody().equals(randomPost.getBody()));
 
    }
 }
