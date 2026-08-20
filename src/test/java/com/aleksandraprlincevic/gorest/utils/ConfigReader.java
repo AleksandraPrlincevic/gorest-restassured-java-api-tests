@@ -29,4 +29,8 @@ public class ConfigReader {
     public static String getUserParameter() {
         return properties.getProperty("usersParameter");
     }
+    public static String getPostParameter() {
+        return properties.getProperty("postsParameter");
+    }
+
 }

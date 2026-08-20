@@ -2,14 +2,14 @@ package com.aleksandraprlincevic.gorest.pojo;
 
 public class Post {
     int id;
-    int userId;
+    int user_id;
     String title;
     String body;
 
     public Post(){}
-    public Post(int id, int userId, String title, String body){
+    public Post(int id, int user_id, String title, String body){
         this.id = id;
-        this.userId = userId;
+        this.user_id = user_id;
         this.title = title;
         this.body = body;
     }
@@ -21,12 +21,12 @@ public class Post {
         this.id = id;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUserId(int user_id) {
+        this.user_id = user_id;
     }
 
     public String getTitle() {
