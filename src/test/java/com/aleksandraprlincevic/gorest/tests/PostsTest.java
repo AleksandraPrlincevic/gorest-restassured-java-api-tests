@@ -15,9 +15,26 @@ import java.util.Random;
 import static io.restassured.RestAssured.given;
 
 public class PostsTest {
-   private int postIdParameter;
    private static Faker faker;
-
+   private Post getRandomPost(List<Post>posts){
+      return posts.get(new Random().nextInt(posts.size()));
+   }
+   private List<Post> getAllPosts(){
+          return given()
+                       .when().get( ConfigReader.getPostParameter())
+                       .then().log().all()
+                       .contentType(ContentType.JSON)
+                       .statusCode(200)
+                       .extract().response().jsonPath().getList(".", Post.class);
+   }
+    private Post getPostById(int postIdParameter){
+       return given()
+                        .when().get(ConfigReader.getPostParameter() + "/" + postIdParameter)
+                        .then().log().all()
+                        .contentType(ContentType.JSON)
+                        .statusCode(200)
+                        .extract().response().as(Post.class);
+    }
    @BeforeMethod
     public void testSetUp(){
        RestAssured.baseURI = ConfigReader.getBaseUrl();
@@ -25,13 +42,7 @@ public class PostsTest {
    }
    @Test
     public void listPosts(){
-       List<Post> posts =
-               given().log().all()
-                       .when().get( ConfigReader.getPostParameter())
-                       .then().log().all()
-                       .statusCode(200)
-                       .contentType(ContentType.JSON)
-               .extract().response().jsonPath().getList(".", Post.class);
+       List<Post> posts = getAllPosts();
        Assert.assertTrue(posts.size()>0);
        posts.forEach((post)->{
            Assert.assertTrue(post.getId()>0);
@@ -41,24 +52,14 @@ public class PostsTest {
    }
    @Test
     public void getPost(){
-       List<Post> posts =
-               given()
-                       .when().get( ConfigReader.getPostParameter())
-                       .then()
-                       .contentType(ContentType.JSON)
-               .extract().response().jsonPath().getList(".", Post.class);
-       Post randomPost = posts.get(new Random().nextInt(posts.size()));
-       int randomPostId = randomPost.getId();
-Post fetchedPost =
-       given()
-               .when().get(ConfigReader.getPostParameter() + "/" + randomPostId)
-               .then().log().all()
-               .statusCode(200)
-       .extract().response().as(Post.class);
-       Assert.assertEquals(fetchedPost.getId(), randomPostId);
+       List<Post> posts = getAllPosts();
+       Post randomPost = getRandomPost(posts);
+       int postIdParameter = randomPost.getId();
+       Post fetchedPost = getPostById(postIdParameter);
+
+       Assert.assertEquals(fetchedPost.getId(), postIdParameter);
        Assert.assertEquals(fetchedPost.getUser_id(), randomPost.getUser_id());
        Assert.assertEquals(fetchedPost.getTitle(), (randomPost.getTitle()));
        Assert.assertTrue(fetchedPost.getBody().equals(randomPost.getBody()));
-
    }
 }
