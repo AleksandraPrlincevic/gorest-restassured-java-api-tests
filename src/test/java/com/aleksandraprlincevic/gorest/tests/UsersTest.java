@@ -16,7 +16,6 @@ import static org.apache.commons.lang3.StringUtils.equalsIgnoreCase;
 
 public class UsersTest {
 
-    //private String usersParameter;
     private int userIdParameter;
     private static Faker faker;
 
