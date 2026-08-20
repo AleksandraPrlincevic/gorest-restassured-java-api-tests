@@ -41,7 +41,7 @@ public class PostsTest {
        faker = new Faker();
    }
    @Test
-    public void listPosts(){
+    public void canGetAllPosts(){
        List<Post> posts = getAllPosts();
        Assert.assertTrue(posts.size()>0);
        posts.forEach((post)->{
@@ -51,7 +51,7 @@ public class PostsTest {
        });
    }
    @Test
-    public void getPost(){
+    public void canGetPostById(){
        List<Post> posts = getAllPosts();
        Post randomPost = getRandomPost(posts);
        int postIdParameter = randomPost.getId();

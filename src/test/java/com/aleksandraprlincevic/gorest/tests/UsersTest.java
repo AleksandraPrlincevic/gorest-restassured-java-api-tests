@@ -25,7 +25,7 @@ public class UsersTest {
     faker = new Faker();
 }
     @Test
-    public void listUsers(){
+    public void canGetAllUsers(){
      List<User> users =
              given().log().all()
              .when().get(ConfigReader.getUserParameter())
@@ -40,7 +40,7 @@ public class UsersTest {
      Assert.assertTrue(randomUser.getId()>0);
     }
     @Test
-    public void getUser(){
+    public void canGetUserById(){
         List<User> users =
                   given()
                   .when().get(ConfigReader.getUserParameter())
@@ -59,7 +59,7 @@ public class UsersTest {
         Assert.assertEquals(fetchedUser.getName(), randomUser.getName());
     }
     @Test
-    public void createUser(){
+    public void canCreateUser(){
         User newUser = new User();
         newUser.setName(faker.name().fullName());
         newUser.setEmail(faker.internet().emailAddress());
@@ -83,7 +83,7 @@ public class UsersTest {
     Assert.assertEquals(createdUser.getStatus(), newUser.getStatus());
     }
     @Test
-    public void replaceUser(){
+    public void canReplaceUser(){
         User substituteUser = new User();
         substituteUser.setName(faker.name().fullName());
         substituteUser.setEmail(faker.internet().emailAddress());
@@ -114,7 +114,7 @@ public class UsersTest {
         Assert.assertNotEquals(replacedUser.getName(), randomUser.getName());
     }
     @Test
-    public void updateUser() {
+    public void canUpdateUser() {
         List<User> users =
                 given()
                         .when().get(ConfigReader.getUserParameter())
