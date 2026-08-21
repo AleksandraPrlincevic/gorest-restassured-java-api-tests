@@ -1,6 +1,7 @@
 package com.aleksandraprlincevic.gorest.tests;
 
 import com.aleksandraprlincevic.gorest.pojo.Post;
+import com.aleksandraprlincevic.gorest.pojo.User;
 import com.aleksandraprlincevic.gorest.utils.ConfigReader;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -45,5 +46,15 @@ public class PostsTest {
    @Test
     public void canCreatePost(){
 
+       User newUser =ApiHelper.createNewUser();
+       User createdUser = ApiHelper.getCreatedUser(newUser);
+       int userId = createdUser.getId();
+       Post post = ApiHelper.createPost(userId);
+       Post createdPost =ApiHelper.getCreatedPost(post);
+
+       Assert.assertEquals(post.getUser_id(), createdPost.getUser_id());
+       Assert.assertEquals(post.getBody(), createdPost.getBody());
+       Assert.assertEquals(post.getTitle(), createdPost.getTitle());
+       }
    }
-}
+

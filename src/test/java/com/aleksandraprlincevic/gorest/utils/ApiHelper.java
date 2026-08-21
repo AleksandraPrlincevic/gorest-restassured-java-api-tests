@@ -120,6 +120,17 @@ public class ApiHelper {
         newPost.setId(faker.number().numberBetween(1, 10000));
         newPost.setTitle(faker.lorem().sentence());
         newPost.setBody(faker.lorem().paragraph());
+        newPost.setUserId(id);
         return newPost;
+    }
+    public static Post getCreatedPost(Post post){
+              return  given().log().all()
+                        .header("Authorization", "Bearer " + ConfigReader.getToken())
+                        .contentType(ContentType.JSON)
+                        .body(post)
+                        .when().post(ConfigReader.getPostParameter())
+                        .then()
+                        .statusCode(201)
+                .extract().response().as(Post.class);
     }
 }
