@@ -78,5 +78,43 @@ public class PostsTest {
         Assert.assertEquals(createdPost.getId(), updatedPost.getId());
         Assert.assertEquals(createdPost.getUser_id(), updatedPost.getUser_id());
     }
-   }
+    @Test
+    public void canReplacePost(){
+        User newUser =ApiHelper.createNewUser();
+        User createdUser = ApiHelper.getCreatedUser(newUser);
+        int userId = createdUser.getId();
+
+        Post post = ApiHelper.createPost(userId);
+        Post createdPost = ApiHelper.getCreatedPost(post);
+        int createdPostId = createdPost.getId();
+
+        Post substitutePost = ApiHelper.createPost(userId);
+        Post replacementPost = ApiHelper.getSubstitutePost(substitutePost, createdPostId);
+        int replacementPostId = replacementPost.getId();
+
+
+        Assert.assertEquals(createdPostId, replacementPostId);
+        Assert.assertEquals(createdPost.getUser_id(), replacementPost.getUser_id());
+        Assert.assertEquals(substitutePost.getTitle(), replacementPost.getTitle());
+        Assert.assertEquals(substitutePost.getBody(), replacementPost.getBody());
+        Assert.assertNotEquals(createdPost.getBody(), replacementPost.getBody());
+    }
+    @Test
+    public void canDeletePost() {
+        User newUser = ApiHelper.createNewUser();
+        User createdUser = ApiHelper.getCreatedUser(newUser);
+        int userId = createdUser.getId();
+
+        Post post = ApiHelper.createPost(userId);
+        Post createdPost = ApiHelper.getCreatedPost(post);
+        int createdPostId = createdPost.getId();
+
+        ApiHelper.deletePost(createdPostId);
+
+        List<Post> postsAfterDelete = ApiHelper.getAllPosts();
+        boolean deletedPostStillExist = postsAfterDelete.stream().anyMatch(p -> p.getId() == createdPostId);
+        Assert.assertFalse(deletedPostStillExist);
+        Assert.assertNotNull(postsAfterDelete);
+    }
+ }
 

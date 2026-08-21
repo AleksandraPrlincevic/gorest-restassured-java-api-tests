@@ -143,4 +143,22 @@ public class ApiHelper {
                 .statusCode(200)
                 .extract().response().as(Post.class);
     }
+    public static Post getSubstitutePost(Post substitutePost, int postId) {
+        return given().log().all()
+                .header("Authorization", "Bearer " + ConfigReader.getToken())
+                .contentType(ContentType.JSON)
+                .body(substitutePost)
+                .when().put(ConfigReader.getPostParameter() + "/" + postId)
+                .then().log().all()
+                .statusCode(200)
+                .extract().response().as(Post.class);
+    }
+    public static void deletePost(int postId){
+         given()
+                .header("Authorization", "Bearer " + ConfigReader.getToken())
+                .contentType(ContentType.JSON)
+                .when().delete(ConfigReader.getPostParameter() + "/" + postId)
+                .then().log().all()
+                .statusCode(204);
+    }
 }
