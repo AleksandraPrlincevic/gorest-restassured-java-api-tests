@@ -35,6 +35,13 @@ public class PostsTest {
                         .statusCode(200)
                         .extract().response().as(Post.class);
     }
+    private Post createPost(int id){
+       Post newPost = new Post();
+       newPost.setId(faker.number().numberBetween(1, 10000));
+       newPost.setTitle(faker.lorem().sentence());
+       newPost.setBody(faker.lorem().paragraph());
+       return newPost;
+    }
    @BeforeMethod
     public void testSetUp(){
        RestAssured.baseURI = ConfigReader.getBaseUrl();
@@ -61,5 +68,9 @@ public class PostsTest {
        Assert.assertEquals(fetchedPost.getUser_id(), randomPost.getUser_id());
        Assert.assertEquals(fetchedPost.getTitle(), (randomPost.getTitle()));
        Assert.assertTrue(fetchedPost.getBody().equals(randomPost.getBody()));
+   }
+   @Test
+    public void canCreatePost(){
+
    }
 }
