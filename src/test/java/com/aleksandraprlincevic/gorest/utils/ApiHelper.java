@@ -133,4 +133,14 @@ public class ApiHelper {
                         .statusCode(201)
                 .extract().response().as(Post.class);
     }
+    public static Post getUpdatedPost(Object updates, int postId) {
+        return given().log().all()
+                .header("Authorization", "Bearer " + ConfigReader.getToken())
+                .contentType(ContentType.JSON)
+                .body(updates)
+                .when().patch(ConfigReader.getPostParameter() + "/" + postId)
+                .then().log().all()
+                .statusCode(200)
+                .extract().response().as(Post.class);
+    }
 }

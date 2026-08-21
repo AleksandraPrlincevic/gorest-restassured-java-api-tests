@@ -10,7 +10,10 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import com.aleksandraprlincevic.gorest.utils.ApiHelper;
+
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import static io.restassured.RestAssured.given;
@@ -56,5 +59,24 @@ public class PostsTest {
        Assert.assertEquals(post.getBody(), createdPost.getBody());
        Assert.assertEquals(post.getTitle(), createdPost.getTitle());
        }
+    @Test
+    public void canUpdatePost(){
+        User newUser =ApiHelper.createNewUser();
+        User createdUser = ApiHelper.getCreatedUser(newUser);
+        int userId = createdUser.getId();
+        Post post = ApiHelper.createPost(userId);
+        Post createdPost =ApiHelper.getCreatedPost(post);
+        int createdPostId = createdPost.getId();
+
+        String title = ApiHelper.faker.lorem().sentence();
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("title", title);
+
+        Post updatedPost = ApiHelper.getUpdatedPost(updates, createdPostId);
+
+        Assert.assertEquals(title,updatedPost.getTitle());
+        Assert.assertEquals(createdPost.getId(), updatedPost.getId());
+        Assert.assertEquals(createdPost.getUser_id(), updatedPost.getUser_id());
+    }
    }
 
