@@ -1,5 +1,6 @@
 package com.aleksandraprlincevic.gorest.utils;
 
+import com.aleksandraprlincevic.gorest.pojo.Post;
 import com.aleksandraprlincevic.gorest.pojo.User;
 import io.restassured.http.ContentType;
 import net.datafaker.Faker;
@@ -94,4 +95,31 @@ public class ApiHelper {
                 .statusCode(204);
     }
 
+    public static Post getRandomPost(List<Post>posts){
+        return posts.get(new Random().nextInt(posts.size()));
+    }
+
+    public static List<Post> getAllPosts(){
+        return given()
+                .when().get( ConfigReader.getPostParameter())
+                .then().log().all()
+                .contentType(ContentType.JSON)
+                .statusCode(200)
+                .extract().response().jsonPath().getList(".", Post.class);
+    }
+    public static Post getPostById(int postIdParameter){
+        return given()
+                .when().get(ConfigReader.getPostParameter() + "/" + postIdParameter)
+                .then().log().all()
+                .contentType(ContentType.JSON)
+                .statusCode(200)
+                .extract().response().as(Post.class);
+    }
+    public static Post createPost(int id){
+        Post newPost = new Post();
+        newPost.setId(faker.number().numberBetween(1, 10000));
+        newPost.setTitle(faker.lorem().sentence());
+        newPost.setBody(faker.lorem().paragraph());
+        return newPost;
+    }
 }
