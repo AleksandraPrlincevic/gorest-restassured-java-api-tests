@@ -23,7 +23,7 @@ applying those concepts using REST Assured in IntelliJ IDEA.
 Clone the repository in IDE terminal:
 
 ```bash
-git clone https://github.com/AleksandraPrlincevic/api-tests-gorest.git
+git clone https://github.com/AleksandraPrlincevic/gorest-restassured-java-api-tests.git
 ```
 ## How to run:
 Create your own config.properties file with base.url, userParameter, postsParameter and
